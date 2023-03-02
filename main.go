@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"encoding/csv"
+	"strings"
 )
 
 func executeExternalProgram(program string, argument1 string){
@@ -25,7 +27,30 @@ func executeExternalProgram(program string, argument1 string){
     }
 }
 
+func searchChannelInCSVFile(channel string) string{
+	csvFile, err := os.Open("iptv.csv")
+	if err != nil {
+    	println(err)
+	}
+	println("Successfully Opened CSV file")
+	defer csvFile.Close()
+
+	csvLines, err := csv.NewReader(csvFile).ReadAll()
+    if err != nil {
+        println(err)
+    }
+    for _, line := range csvLines {
+    	if strings.Compare(channel,line[0])==0 {
+        	return (line[1])
+    	}
+    }
+    return ""
+}
+
 func main(){
-	program := flag.String("channel","BeritaSatu","Channel Name that you want to watch")
-	executeExternalProgram("/usr/bin/mpv","https://b1world.beritasatumedia.com/Beritasatu/B1World_manifest.m3u8")
+	channel := flag.String("channel","BeritaSatu","Channel Name that you want to watch")
+	flag.Parse()
+
+	searchChannelInCSVFile(*channel)
+	executeExternalProgram("/usr/bin/mpv",searchChannelInCSVFile(*channel))
 }
