@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"encoding/csv"
 	"strings"
+	"runtime"
 )
 
 func executeExternalProgram(program string, argument1 string){
@@ -32,7 +33,6 @@ func searchChannelInCSVFile(channel string) string{
 	if err != nil {
     	println(err)
 	}
-	println("Successfully Opened CSV file")
 	defer csvFile.Close()
 
 	csvLines, err := csv.NewReader(csvFile).ReadAll()
@@ -47,10 +47,15 @@ func searchChannelInCSVFile(channel string) string{
     return ""
 }
 
+
 func main(){
 	channel := flag.String("channel","BeritaSatu","Channel Name that you want to watch")
 	flag.Parse()
 
-	searchChannelInCSVFile(*channel)
-	executeExternalProgram("/usr/bin/mpv",searchChannelInCSVFile(*channel))
+	switch currOS := runtime.GOOS; currOS {
+	case "darwin":
+		println("Mac OS")
+	case "linux":
+		executeExternalProgram("/usr/bin/mpv",searchChannelInCSVFile(*channel))
+	}
 }
