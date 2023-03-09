@@ -10,10 +10,10 @@ import (
 	"runtime"
 )
 
-func executeExternalProgram(program string, argument1 string){
+func executeExternalProgram(program string, argument1 string, argument2 string, argument3 string){
 	output := &exec.Cmd{
 		Path :	program,
-		Args :	[]string {program,argument1},
+		Args :	[]string {program,argument1,argument2,argument3},
 		Stdout: os.Stdout,
         Stderr: os.Stderr,
     }
@@ -54,8 +54,8 @@ func main(){
 
 	switch currOS := runtime.GOOS; currOS {
 	case "darwin":
-		println("Mac OS")
+		executeExternalProgram("/usr/bin/open","/Applications/VLC.app","--args",searchChannelInCSVFile(*channel))
 	case "linux":
-		executeExternalProgram("/usr/bin/mpv",searchChannelInCSVFile(*channel))
+		executeExternalProgram("/usr/bin/mpv",searchChannelInCSVFile(*channel),"","")
 	}
 }
